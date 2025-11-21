@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
 import * as locator from '@arcgis/core/rest/locator'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const GEOCODER_URL =
   'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer'

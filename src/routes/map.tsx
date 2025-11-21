@@ -1,13 +1,18 @@
-import { createFileRoute } from '@tanstack/react-router'
 import { Box } from '@radix-ui/themes'
-import AddressSearch from '@/components/ui/controls/AddressSearch'
+import { createFileRoute } from '@tanstack/react-router'
+
 import MapView from '@/components/map/MapView'
+import { MapProvider } from '@/context/MapContext'
+import { ToolProvider } from '@/context/ToolManagerContext'
 
 export const Route = createFileRoute('/map')({
   component: () => (
     <Box p="3" height="100vh" width="100vw">
-      <AddressSearch />
-      <MapView />
+      <MapProvider>
+        <ToolProvider>
+          <MapView />
+        </ToolProvider>
+      </MapProvider>
     </Box>
   ),
 })

@@ -1,11 +1,11 @@
+import { Theme } from '@radix-ui/themes'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { Theme } from '@radix-ui/themes'
+
 import { routeTree } from './routeTree.gen'
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
-import { MapProvider } from './context/MapContext.tsx'
 import '@radix-ui/themes/styles.css'
 
 // Create a new router instance
@@ -32,9 +32,7 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <Theme appearance="dark" grayColor="slate">
       <StrictMode>
-        <MapProvider>
-          <RouterProvider router={router} />
-        </MapProvider>
+        <RouterProvider router={router} />
       </StrictMode>
     </Theme>,
   )

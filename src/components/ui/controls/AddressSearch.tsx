@@ -1,11 +1,13 @@
 import { Box, Flex } from '@radix-ui/themes'
 import { useMemo } from 'react'
-import { Panel } from '../Panel'
-import { Input } from '@/components/ui/input'
+
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { useMap } from '@/context/MapContext'
 import { useAddressSearch } from '@/hooks/useAddressSearch'
 import { goToPoint } from '@/utils/goToPoint'
+
+import { Panel } from '../Panel'
 
 export default function AddressSearch() {
   const { whenReady } = useMap()
