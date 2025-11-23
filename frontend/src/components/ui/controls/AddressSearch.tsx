@@ -38,7 +38,10 @@ export default function AddressSearch() {
           value={query}
           placeholder="Search address…"
           onChange={(e) => onQueryChange(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && submit()}
+          onKeyDown={(e) => {
+            e.key === 'Enter' && submit()
+            e.stopPropagation()
+          }}
         />
 
         <Button disabled={loading} onClick={submit}>

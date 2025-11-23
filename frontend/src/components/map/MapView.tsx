@@ -1,4 +1,3 @@
-import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel'
 import { Box } from '@radix-ui/themes'
 import { useQuery } from '@tanstack/react-query'
 import { useAtom, useSetAtom } from 'jotai'
@@ -11,7 +10,7 @@ import { listGeometriesGeometryGetOptions } from '@/api/client/@tanstack/react-q
 import { useDeleteSelectedGeometry } from '@/hooks/useDeleteGeometry'
 import { useGraphicsLayer } from '@/hooks/useGraphicsLayer'
 
-import { graphicsLayerAtom, sketchVMAtom, viewAtom } from './atoms'
+import { graphicsLayerAtom, viewAtom } from './atoms'
 import { DEFAULT_CENTER, DEFAULT_ZOOM, MINIMUM_MAP_ZOOM } from './constants'
 import { GraphicInfoPanel } from './GraphicInfoPanel'
 import Toolbar from './Toolbar'
@@ -24,7 +23,6 @@ import type { ArcgisMapCustomEvent } from '@arcgis/map-components'
 export default function MapView() {
   const [view, setView] = useAtom(viewAtom)
   const setGraphicsLayer = useSetAtom(graphicsLayerAtom)
-  const [sketch, setSketchVM] = useAtom(sketchVMAtom)
 
   const { data: geometries } = useQuery(listGeometriesGeometryGetOptions())
   const deleteModal = useDeleteSelectedGeometry()
@@ -62,17 +60,8 @@ export default function MapView() {
       map.view.constraints = {
         minZoom: MINIMUM_MAP_ZOOM,
       }
-
-      if (!sketch) {
-        const vm = new SketchViewModel({
-          view: nextView,
-          layer,
-          defaultUpdateOptions: { tool: 'reshape' },
-        })
-        setSketchVM(vm)
-      }
     },
-    [layer, sketch, setSketchVM, setView],
+    [layer, setView],
   )
 
   return (

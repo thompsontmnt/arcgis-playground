@@ -1,9 +1,15 @@
+import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel'
 import { useAtomValue } from 'jotai'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
-import { viewAtom, viewReadyAtom } from '@/components/map/atoms'
+import {
+  graphicsLayerAtom,
+  sketchVMAtom,
+  viewAtom,
+} from '@/components/map/atoms'
 import { defaultTools } from '@/components/tools'
 import type { ToolInitializer } from '@/components/tools'
+import { jotaiStore } from '@/jotai/jotaiStore'
 
 type ToolRegistry = Record<string, ToolInitializer>
 
@@ -20,21 +26,36 @@ export const ToolManagerProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  const view = useAtomValue(viewAtom)
+  const layer = useAtomValue(graphicsLayerAtom)
+
   const [activeTool, setActiveTool] = useState('select')
+
   const registryRef = useRef<ToolRegistry>({})
   const currentToolRef = useRef<{ deactivate: () => void } | null>(null)
 
-  const view = useAtomValue(viewAtom)
-  const viewReady = useAtomValue(viewReadyAtom)
-
-  const registerTool = (name: string, init: ToolInitializer) => {
-    registryRef.current[name] = init
-  }
-
+  // --- Persistent SketchVM instance ---
   useEffect(() => {
-    if (!view) return
+    if (!view || !layer) return
 
-    // clean up previous tool
+    const sketch = new SketchViewModel({
+      view,
+      layer,
+      defaultUpdateOptions: { tool: 'reshape' },
+    })
+
+    jotaiStore.set(sketchVMAtom, sketch)
+
+    return () => {
+      sketch.destroy()
+      jotaiStore.set(sketchVMAtom, null)
+    }
+  }, [view, layer])
+
+  // --- Activate tools ---
+  useEffect(() => {
+    if (!view || !layer) return
+
     currentToolRef.current?.deactivate()
 
     const initializer =
@@ -49,7 +70,11 @@ export const ToolManagerProvider = ({
     return () => {
       tool.deactivate()
     }
-  }, [activeTool, viewReady])
+  }, [activeTool, view, layer])
+
+  const registerTool = (name: string, init: ToolInitializer) => {
+    registryRef.current[name] = init
+  }
 
   return (
     <ToolManagerContext.Provider
@@ -62,6 +87,7 @@ export const ToolManagerProvider = ({
 
 export function useToolManager() {
   const ctx = useContext(ToolManagerContext)
-  if (!ctx) throw new Error('useToolManager must be used inside ToolProvider')
+  if (!ctx)
+    throw new Error('useToolManager must be used inside ToolManagerProvider')
   return ctx
 }
