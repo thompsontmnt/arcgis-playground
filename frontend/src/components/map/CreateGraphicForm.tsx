@@ -1,6 +1,6 @@
 import { Box, Button, Text, TextField } from '@radix-ui/themes'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useSetAtom } from 'jotai'
+import { useAtom, useSetAtom } from 'jotai'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -10,7 +10,7 @@ import {
   listGeometriesGeometryGetQueryKey,
 } from '@/api/client/@tanstack/react-query.gen'
 
-import { createModeAtom, draftGraphicAtom } from './atoms'
+import { createModeAtom, draftGraphicAtom, sketchVMAtom } from './atoms'
 import { arcgisToWkt } from './utils/wkt-utils'
 
 import type Graphic from '@arcgis/core/Graphic'
@@ -23,6 +23,7 @@ export function CreateGraphicForm({ graphic }: CreateGraphicFormProps) {
   const [label, setLabel] = useState('')
   const setDraft = useSetAtom(draftGraphicAtom)
   const setCreateMode = useSetAtom(createModeAtom)
+  const sketchVM = useAtom(sketchVMAtom)[0]
 
   const queryClient = useQueryClient()
 
@@ -67,7 +68,7 @@ export function CreateGraphicForm({ graphic }: CreateGraphicFormProps) {
   return (
     <Box>
       <Text size="4" weight="bold">
-        Create Geometry
+        Create Graphic
       </Text>
 
       <TextField.Root
@@ -86,11 +87,14 @@ export function CreateGraphicForm({ graphic }: CreateGraphicFormProps) {
         </Button>
 
         <Button
-          variant="soft"
+          variant="outline"
           ml="2"
           onClick={() => {
             setDraft(null)
             setCreateMode(false)
+            if (sketchVM) {
+              sketchVM.cancel()
+            }
           }}
         >
           Cancel

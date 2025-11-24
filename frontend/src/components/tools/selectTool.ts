@@ -4,6 +4,7 @@ import {
   graphicsLayerAtom,
   selectedGraphicsAtom,
   sketchVMAtom,
+  updateModeAtom,
 } from '../map/atoms'
 
 import type MapView from '@arcgis/core/views/MapView'
@@ -65,8 +66,10 @@ export function selectTool() {
 
         if (match?.graphic) {
           jotaiStore.set(selectedGraphicsAtom, [match.graphic])
+          jotaiStore.set(updateModeAtom, true)
         } else {
           jotaiStore.set(selectedGraphicsAtom, [])
+          jotaiStore.set(updateModeAtom, false)
         }
       })
     },
