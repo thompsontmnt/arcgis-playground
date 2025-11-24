@@ -1,4 +1,4 @@
-import { Box } from '@radix-ui/themes'
+import { Box, Flex } from '@radix-ui/themes'
 import { useQuery } from '@tanstack/react-query'
 import { useAtom, useSetAtom } from 'jotai'
 import { useCallback, useMemo } from 'react'
@@ -10,33 +10,46 @@ import { listGeometriesGeometryGetOptions } from '@/api/client/@tanstack/react-q
 import { useDeleteSelectedGeometry } from '@/hooks/useDeleteGeometry'
 import { useGraphicsLayer } from '@/hooks/useGraphicsLayer'
 
-import { graphicsLayerAtom, viewAtom } from './atoms'
+import { graphicsByIdAtom, graphicsLayerAtom, viewAtom } from './atoms'
 import { DEFAULT_CENTER, DEFAULT_ZOOM, MINIMUM_MAP_ZOOM } from './constants'
 import { GraphicInfoPanel } from './GraphicInfoPanel'
+import { GraphicsListPanel } from './GraphicListPanel'
 import Toolbar from './Toolbar'
 import { convertFeatureToGraphic } from './utils/convertFeatureToGraphic'
 import { simpleFillSymbol } from './utils/symbols'
 import AddressSearch from '../ui/controls/AddressSearch'
 
+import type Graphic from '@arcgis/core/Graphic'
 import type { ArcgisMapCustomEvent } from '@arcgis/map-components'
 
 export default function MapView() {
   const [view, setView] = useAtom(viewAtom)
   const setGraphicsLayer = useSetAtom(graphicsLayerAtom)
+  const setGraphicsById = useSetAtom(graphicsByIdAtom)
 
   const { data: geometries } = useQuery(listGeometriesGeometryGetOptions())
   const deleteModal = useDeleteSelectedGeometry()
 
   const graphics = useMemo(() => {
     if (!Array.isArray(geometries)) return []
-    return geometries.map((geometry) =>
-      convertFeatureToGraphic({
+
+    const byId: Record<string, Graphic> = {}
+
+    const result = geometries.map((geometry) => {
+      const g = convertFeatureToGraphic({
         id: geometry.id.toString(),
         geometry: geometry.wkt,
         attributes: { ...geometry },
         symbol: simpleFillSymbol,
-      }),
-    )
+      })
+
+      byId[geometry.id] = g
+      return g
+    })
+
+    setGraphicsById(byId)
+
+    return result
   }, [geometries])
 
   const { layer } = useGraphicsLayer({
@@ -68,7 +81,10 @@ export default function MapView() {
     <>
       <arcgis-map basemap="satellite" onarcgisViewReadyChange={handleReady}>
         <arcgis-placement slot="top-left">
-          <AddressSearch />
+          <Flex direction="column" gap="2">
+            <AddressSearch />
+            <GraphicsListPanel />
+          </Flex>
         </arcgis-placement>
 
         <arcgis-placement slot="top-right">
