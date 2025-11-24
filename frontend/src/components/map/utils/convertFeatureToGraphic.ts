@@ -10,7 +10,7 @@ export interface Feature {
   id?: string
   geometry: WktString | Geometry
   attributes?: Record<string | number | symbol, unknown>
-  symbol?: __esri.Graphic['symbol']
+  symbol?: Graphic['symbol']
 }
 
 export function convertFeatureToGraphic({
