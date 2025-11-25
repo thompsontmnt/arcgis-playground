@@ -1,29 +1,66 @@
-import { Flex, IconButton, ScrollArea, Spinner, Text } from '@radix-ui/themes'
+import {
+  Button,
+  Flex,
+  IconButton,
+  ScrollArea,
+  Spinner,
+  Text,
+  TextField,
+} from '@radix-ui/themes'
 import { useQuery } from '@tanstack/react-query'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { ChevronDownIcon, ChevronUpIcon, LocateIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  LocateIcon,
+  SearchIcon,
+} from 'lucide-react'
+import { useMemo, useState } from 'react'
 
 import {
   listGeometriesGeometryGetOptions,
   listGeometriesGeometryGetQueryKey,
 } from '@/api/client/@tanstack/react-query.gen'
+import { cn } from '@/lib/utils'
 
-import { graphicsByIdAtom, selectedGraphicsAtom } from './atoms'
+import { selectedGraphicsAtom, sketchVMAtom, updateModeAtom } from './atoms'
 import { viewAtom } from '../map/atoms'
 import { Panel } from '../ui/Panel'
+import { updateSketchVMWithGraphic } from './utils/common'
+import { computeGraphicsExtent } from './utils/extent'
 import { WktPolygonSvg } from './utils/WktToPolygonSvg'
 
-export function GraphicsListPanel() {
+import type Graphic from '@arcgis/core/Graphic'
+
+export function GraphicsListPanel({ graphics }: { graphics: Array<Graphic> }) {
   const [collapsed, setCollapsed] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
   const view = useAtomValue(viewAtom)
-  const graphicsById = useAtomValue(graphicsByIdAtom)
-  const setSelected = useSetAtom(selectedGraphicsAtom)
+  const [selected, setSelected] = useAtom(selectedGraphicsAtom)
+  const sketchVM = useAtomValue(sketchVMAtom)
+  const updateMode = useSetAtom(updateModeAtom)
+
+  const selectedId = selected[0]?.attributes?.id
+
+  const [search, setSearch] = useState('')
 
   const { data, isLoading } = useQuery({
     ...listGeometriesGeometryGetOptions(),
     queryKey: listGeometriesGeometryGetQueryKey(),
   })
+
+  const filtered = useMemo(() => {
+    if (!data) return []
+    return data.filter(
+      (g) =>
+        g.label?.toLowerCase().includes(search.toLowerCase()) ||
+        g.id.toString().includes(search),
+    )
+  }, [data, search])
+  const handleFitAll = () => {
+    const extent = computeGraphicsExtent(graphics)
+    if (extent && view) view.goTo(extent.expand(1.2))
+  }
 
   if (isLoading) return <Spinner />
   if (!data?.length)
@@ -32,9 +69,12 @@ export function GraphicsListPanel() {
   return (
     <Panel>
       <Flex justify="between" align="center">
-        <Text size="4" weight="bold">
-          All Graphics
-        </Text>
+        <Flex gap="2" align="center">
+          <Text size="4" weight="bold">
+            All Graphics
+          </Text>
+        </Flex>
+
         <IconButton
           size="1"
           variant="ghost"
@@ -50,17 +90,55 @@ export function GraphicsListPanel() {
       </Flex>
       {!collapsed && (
         <ScrollArea style={{ maxHeight: 600, width: '100%' }}>
+          <Flex p="2" my="2" justify="between" align="center">
+            {!showSearch ? (
+              <IconButton
+                size="1"
+                variant="ghost"
+                onClick={() => setShowSearch(true)}
+                title="Show search"
+              >
+                <SearchIcon size="16" />
+              </IconButton>
+            ) : (
+              <TextField.Root
+                placeholder="Search…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onBlur={() => {
+                  if (!search) setShowSearch(false)
+                }}
+                autoFocus
+                onKeyDown={(e) => e.stopPropagation()}
+              >
+                <TextField.Slot>
+                  <SearchIcon size={16} />
+                </TextField.Slot>
+              </TextField.Root>
+            )}
+            <Button size="1" onClick={handleFitAll} highContrast>
+              Fit All
+            </Button>
+          </Flex>
           <Flex direction="column" gap="2" mt="3">
-            {data.map((item) => {
-              const graphic = graphicsById[item.id]
+            {filtered.map((item) => {
+              const graphic = graphics.find((g) => g.attributes.id === item.id)
+              const isSelected = selectedId === item.id
               return (
                 <Flex
                   key={item.id}
                   justify="between"
                   align="center"
-                  className="p-2 mr-2 rounded hover:bg-gray-600 cursor-pointer"
+                  className={cn` transition-colors
+                p-2 rounded cursor-pointer hover:bg-gray-600
+                ${isSelected ? 'bg-gray-600' : undefined}
+              `}
                   onClick={() => {
-                    setSelected([graphic])
+                    if (graphic) {
+                      setSelected([graphic])
+                      updateSketchVMWithGraphic(sketchVM, graphic)
+                      updateMode(true)
+                    }
                   }}
                   role="listitem"
                 >
@@ -74,8 +152,9 @@ export function GraphicsListPanel() {
                   <IconButton
                     size="1"
                     variant="ghost"
-                    onClick={() => {
-                      if (view) {
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (view && graphic) {
                         view.goTo(graphic)
                       }
                     }}
