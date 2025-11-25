@@ -1,0 +1,9 @@
+{
+  "name": "ArcGIS Playground",
+  "short_name": "ArcGISPlayground",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "description": "A web app for messing around with ArcGIS inside react."
+}
