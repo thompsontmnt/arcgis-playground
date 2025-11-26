@@ -4,7 +4,7 @@ import os
 
 DB_PATH = os.path.join("/data", "geometry.db")
 
-SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
+SQLALCHEMY_DATABASE_URL = "sqlite:////opt/render/project/src/geometry.db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
