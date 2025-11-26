@@ -33,9 +33,11 @@ The frontend consumes these API endpoints via [hey-api OpenAPI](https://github.c
 App Overview
 
 Map View
+
 <img width="1501" height="799" alt="Screenshot 2025-11-25 at 8 03 10 PM" src="https://github.com/user-attachments/assets/4b0249e9-24ab-4042-9291-1ee3e6f3f4e1" />
 
 Graphic selection
+
 <img width="1499" height="800" alt="Screenshot 2025-11-25 at 8 04 15 PM" src="https://github.com/user-attachments/assets/0451d359-565b-4576-9db3-4cc4a1ea8569" />
 
 Draw Polygon and persist graphic via API
@@ -44,6 +46,7 @@ Draw Polygon and persist graphic via API
 
 
 Zoom to different views
+
 ![ScreenRecording2025-11-25at8 06 46PM-ezgif com-speed](https://github.com/user-attachments/assets/2f7318f7-bf1d-4a56-a7fd-f22f9746357b)
 
 
