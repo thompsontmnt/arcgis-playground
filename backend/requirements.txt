@@ -9,3 +9,4 @@ shapely
 black
 isort
 mypy
+httpx
