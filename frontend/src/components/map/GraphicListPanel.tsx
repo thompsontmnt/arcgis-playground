@@ -83,7 +83,15 @@ export function GraphicsListPanel({ graphics }: { graphics: Array<Graphic> }) {
         <Flex p="2" direction="column" gap="2" align="center" justify="center">
           <Spinner />
           {showLoadingMessage && (
-            <Text size="2">Spinning up the API, one sec</Text>
+            <Text size="2">
+              <a
+                href="https://arcgis-playground-api.onrender.com/docs"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Spinning up the API, check it out here.
+              </a>
+            </Text>
           )}
         </Flex>
       </Panel>
