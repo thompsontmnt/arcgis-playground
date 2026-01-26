@@ -5,6 +5,125 @@ export type ClientOptions = {
 }
 
 /**
+ * CarbonMapperPlume
+ */
+export type CarbonMapperPlume = {
+  /**
+   * Id
+   */
+  id: string
+  /**
+   * Plume Id
+   */
+  plume_id?: string | null
+  /**
+   * Gas
+   */
+  gas?: string | null
+  /**
+   * Geometry Json
+   */
+  geometry_json?: unknown | null
+  /**
+   * Plume Bounds
+   */
+  plume_bounds?: Array<number> | null
+  /**
+   * Plume Png
+   */
+  plume_png?: string | null
+  /**
+   * Emission Auto
+   */
+  emission_auto?: number | null
+  /**
+   * Platform
+   */
+  platform?: string | null
+  /**
+   * Instrument
+   */
+  instrument?: string | null
+  /**
+   * Scene Timestamp
+   */
+  scene_timestamp?: string | null
+}
+
+/**
+ * CarbonMapperResponse
+ */
+export type CarbonMapperResponse = {
+  /**
+   * Items
+   */
+  items: Array<CarbonMapperPlume>
+  /**
+   * Total Count
+   */
+  total_count?: number | null
+  /**
+   * Bbox Count
+   */
+  bbox_count?: number | null
+  /**
+   * Limit
+   */
+  limit?: number | null
+  /**
+   * Offset
+   */
+  offset?: number | null
+}
+
+/**
+ * CensusBlockResponse
+ */
+export type CensusBlockResponse = {
+  /**
+   * Geoid
+   */
+  geoid: string
+  /**
+   * State
+   */
+  state: string
+  /**
+   * County
+   */
+  county: string
+  /**
+   * Tract
+   */
+  tract: string
+  /**
+   * Block
+   */
+  block: string
+  /**
+   * Bbox
+   */
+  bbox: Array<number> | null
+  geometry: CensusGeometry
+}
+
+/**
+ * CensusGeometry
+ */
+export type CensusGeometry = {
+  /**
+   * Rings
+   */
+  rings: Array<Array<Array<number>>>
+  /**
+   * Spatialreference
+   */
+  spatialReference?: {
+    [key: string]: unknown
+  } | null
+}
+
+/**
  * GeometryCreate
  */
 export type GeometryCreate = {
@@ -77,6 +196,42 @@ export type ValidationError = {
    */
   type: string
 }
+
+export type GetCensusBlockApiCensusBlockGetData = {
+  body?: never
+  path?: never
+  query: {
+    /**
+     * Lat
+     */
+    lat: number
+    /**
+     * Lng
+     */
+    lng: number
+  }
+  url: '/api/census/block'
+}
+
+export type GetCensusBlockApiCensusBlockGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError
+}
+
+export type GetCensusBlockApiCensusBlockGetError =
+  GetCensusBlockApiCensusBlockGetErrors[keyof GetCensusBlockApiCensusBlockGetErrors]
+
+export type GetCensusBlockApiCensusBlockGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: CensusBlockResponse
+}
+
+export type GetCensusBlockApiCensusBlockGetResponse =
+  GetCensusBlockApiCensusBlockGetResponses[keyof GetCensusBlockApiCensusBlockGetResponses]
 
 export type ListGeometriesGeometryGetData = {
   body?: never
@@ -216,6 +371,54 @@ export type UpdateGeometryGeometryGeomIdPutResponses = {
 
 export type UpdateGeometryGeometryGeomIdPutResponse =
   UpdateGeometryGeometryGeomIdPutResponses[keyof UpdateGeometryGeometryGeomIdPutResponses]
+
+export type GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetData = {
+  body?: never
+  path?: never
+  query?: {
+    /**
+     * Instrument
+     */
+    instrument?: string | null
+    /**
+     * Country
+     */
+    country?: string | null
+    /**
+     * Plume Id
+     */
+    plume_id?: string | null
+    /**
+     * Collection Date Start
+     */
+    collection_date_start?: string | null
+    /**
+     * Collection Date End
+     */
+    collection_date_end?: string | null
+  }
+  url: '/api/v1/carbon-mapper/plumes'
+}
+
+export type GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError
+}
+
+export type GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetError =
+  GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetErrors[keyof GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetErrors]
+
+export type GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: CarbonMapperResponse
+}
+
+export type GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetResponse =
+  GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetResponses[keyof GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetResponses]
 
 export type RootGetData = {
   body?: never

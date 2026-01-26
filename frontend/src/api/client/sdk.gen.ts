@@ -9,6 +9,12 @@ import type {
   DeleteGeometryGeometryGeomIdDeleteData,
   DeleteGeometryGeometryGeomIdDeleteErrors,
   DeleteGeometryGeometryGeomIdDeleteResponses,
+  GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetData,
+  GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetErrors,
+  GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetResponses,
+  GetCensusBlockApiCensusBlockGetData,
+  GetCensusBlockApiCensusBlockGetErrors,
+  GetCensusBlockApiCensusBlockGetResponses,
   GetGeometryGeometryGeomIdGetData,
   GetGeometryGeometryGeomIdGetErrors,
   GetGeometryGeometryGeomIdGetResponses,
@@ -36,6 +42,24 @@ export type Options<
    * used to access values that aren't defined as part of the SDK function.
    */
   meta?: Record<string, unknown>
+}
+
+/**
+ * Get Census Block
+ */
+export const getCensusBlockApiCensusBlockGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options: Options<GetCensusBlockApiCensusBlockGetData, ThrowOnError>,
+) => {
+  return (options.client ?? client).get<
+    GetCensusBlockApiCensusBlockGetResponses,
+    GetCensusBlockApiCensusBlockGetErrors,
+    ThrowOnError
+  >({
+    url: '/api/census/block',
+    ...options,
+  })
 }
 
 /**
@@ -131,6 +155,30 @@ export const updateGeometryGeometryGeomIdPut = <
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  })
+}
+
+/**
+ * Get Carbon Mapper Plumes
+ *
+ * Proxy endpoint to Carbon Mapper API.
+ * Uses CARBON_MAPPER_TOKEN from environment variables for secure authentication.
+ */
+export const getCarbonMapperPlumesApiV1CarbonMapperPlumesGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: Options<
+    GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetData,
+    ThrowOnError
+  >,
+) => {
+  return (options?.client ?? client).get<
+    GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetResponses,
+    GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetErrors,
+    ThrowOnError
+  >({
+    url: '/api/v1/carbon-mapper/plumes',
+    ...options,
   })
 }
 

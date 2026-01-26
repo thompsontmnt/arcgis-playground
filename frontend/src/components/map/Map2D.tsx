@@ -1,17 +1,16 @@
 import '@arcgis/map-components/components/arcgis-map'
 import '@arcgis/map-components/components/arcgis-placement'
-import { useAtom, useSetAtom } from 'jotai'
+import { useAtom } from 'jotai'
 import { useCallback } from 'react'
 
-import { graphicsLayerAtom, viewAtom } from './atoms'
+import { viewAtom } from './atoms'
 import { DEFAULT_CENTER, DEFAULT_ZOOM, MINIMUM_MAP_ZOOM } from './constants'
 
 import type { ArcgisMapCustomEvent } from '@arcgis/map-components'
 import type { PropsWithChildren } from 'react'
 
 export default function Map2D({ children }: PropsWithChildren) {
-  const setView = useSetAtom(viewAtom)
-  const [graphicsLayer] = useAtom(graphicsLayerAtom)
+  const [, setView] = useAtom(viewAtom)
 
   const handleReady = useCallback(
     (e: ArcgisMapCustomEvent<void>) => {
@@ -21,13 +20,9 @@ export default function Map2D({ children }: PropsWithChildren) {
       newView.goTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM })
       newView.constraints = { minZoom: MINIMUM_MAP_ZOOM }
 
-      if (graphicsLayer && !newView.map?.layers.includes(graphicsLayer)) {
-        newView.map?.add(graphicsLayer)
-      }
-
       setView(newView)
     },
-    [graphicsLayer, setView],
+    [setView],
   )
 
   return (

@@ -55,6 +55,7 @@ export default function Toolbar() {
         </IconButton>
 
         <Separator orientation="vertical" />
+
         <IconButton
           size="1"
           variant="ghost"

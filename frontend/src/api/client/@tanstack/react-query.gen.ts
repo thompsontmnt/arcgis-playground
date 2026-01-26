@@ -6,6 +6,8 @@ import { client } from '../client.gen'
 import {
   createGeometryGeometryPost,
   deleteGeometryGeometryGeomIdDelete,
+  getCarbonMapperPlumesApiV1CarbonMapperPlumesGet,
+  getCensusBlockApiCensusBlockGet,
   getGeometryGeometryGeomIdGet,
   listGeometriesGeometryGet,
   type Options,
@@ -18,6 +20,8 @@ import type {
   CreateGeometryGeometryPostResponse,
   DeleteGeometryGeometryGeomIdDeleteData,
   DeleteGeometryGeometryGeomIdDeleteError,
+  GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetData,
+  GetCensusBlockApiCensusBlockGetData,
   GetGeometryGeometryGeomIdGetData,
   ListGeometriesGeometryGetData,
   RootGetData,
@@ -64,6 +68,30 @@ const createQueryKey = <TOptions extends Options>(
     params.query = options.query
   }
   return [params]
+}
+
+export const getCensusBlockApiCensusBlockGetQueryKey = (
+  options: Options<GetCensusBlockApiCensusBlockGetData>,
+) => createQueryKey('getCensusBlockApiCensusBlockGet', options)
+
+/**
+ * Get Census Block
+ */
+export const getCensusBlockApiCensusBlockGetOptions = (
+  options: Options<GetCensusBlockApiCensusBlockGetData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getCensusBlockApiCensusBlockGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      })
+      return data
+    },
+    queryKey: getCensusBlockApiCensusBlockGetQueryKey(options),
+  })
 }
 
 export const listGeometriesGeometryGetQueryKey = (
@@ -193,6 +221,33 @@ export const updateGeometryGeometryGeomIdPutMutation = (
     },
   }
   return mutationOptions
+}
+
+export const getCarbonMapperPlumesApiV1CarbonMapperPlumesGetQueryKey = (
+  options?: Options<GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetData>,
+) => createQueryKey('getCarbonMapperPlumesApiV1CarbonMapperPlumesGet', options)
+
+/**
+ * Get Carbon Mapper Plumes
+ *
+ * Proxy endpoint to Carbon Mapper API.
+ * Uses CARBON_MAPPER_TOKEN from environment variables for secure authentication.
+ */
+export const getCarbonMapperPlumesApiV1CarbonMapperPlumesGetOptions = (
+  options?: Options<GetCarbonMapperPlumesApiV1CarbonMapperPlumesGetData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getCarbonMapperPlumesApiV1CarbonMapperPlumesGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      })
+      return data
+    },
+    queryKey: getCarbonMapperPlumesApiV1CarbonMapperPlumesGetQueryKey(options),
+  })
 }
 
 export const rootGetQueryKey = (options?: Options<RootGetData>) =>

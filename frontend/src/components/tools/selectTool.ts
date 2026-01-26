@@ -6,11 +6,16 @@ import {
 } from '@/state/hintAtoms'
 
 import {
+  carbonMapperLayerAtom,
+  carbonMapperMediaLayerAtom,
   graphicsLayerAtom,
+  selectedCarbonMapperGraphicAtom,
+  selectedCarbonMapperPlumeAtom,
   selectedGraphicsAtom,
   sketchVMAtom,
   updateModeAtom,
 } from '../map/atoms'
+import { hidePlumePNG, showPlumePNG } from '../map/utils/plumeSymbols'
 
 import type MapView from '@arcgis/core/views/MapView'
 
@@ -66,6 +71,34 @@ export function selectTool() {
       clickHandle = view.on('click', async (event) => {
         const hit = await view.hitTest(event)
 
+        const carbonMapperLayer = jotaiStore.get(carbonMapperLayerAtom)
+        const carbonMapperMatch = hit.results.find(
+          (r): r is __esri.MapViewGraphicHit =>
+            'graphic' in r && r.graphic.layer?.id === carbonMapperLayer?.id,
+        )
+
+        if (carbonMapperMatch?.graphic) {
+          const { graphic } = carbonMapperMatch
+          const { attributes } = graphic
+          const mediaLayer = jotaiStore.get(carbonMapperMediaLayerAtom)
+
+          if (mediaLayer && attributes?.plume_png && attributes?.plume_bounds) {
+            showPlumePNG(
+              mediaLayer,
+              attributes.plume_png,
+              attributes.plume_bounds,
+            )
+            view.goTo({ target: graphic.geometry, zoom: 14 })
+          }
+
+          jotaiStore.set(selectedCarbonMapperGraphicAtom, graphic)
+          jotaiStore.set(selectedCarbonMapperPlumeAtom, attributes)
+          jotaiStore.set(selectedGraphicsAtom, [])
+          jotaiStore.set(updateModeAtom, false)
+          jotaiStore.set(hasSelectionAtom, false)
+          return
+        }
+
         const match = hit.results.find(
           (r): r is __esri.MapViewGraphicHit =>
             'graphic' in r &&
@@ -74,6 +107,14 @@ export function selectTool() {
         )
 
         if (match?.graphic) {
+          // Hide previous plume PNG if any
+          const mediaLayer = jotaiStore.get(carbonMapperMediaLayerAtom)
+          if (mediaLayer) {
+            hidePlumePNG(mediaLayer)
+          }
+
+          jotaiStore.set(selectedCarbonMapperGraphicAtom, null)
+          jotaiStore.set(selectedCarbonMapperPlumeAtom, null)
           jotaiStore.set(selectedGraphicsAtom, [match.graphic])
           jotaiStore.set(updateModeAtom, true)
           jotaiStore.set(activeToolAtom, 'select')
@@ -83,6 +124,14 @@ export function selectTool() {
             'Press Delete to remove selected shape.',
           )
         } else {
+          // Hide previous plume PNG if any
+          const mediaLayer = jotaiStore.get(carbonMapperMediaLayerAtom)
+          if (mediaLayer) {
+            hidePlumePNG(mediaLayer)
+          }
+
+          jotaiStore.set(selectedCarbonMapperGraphicAtom, null)
+          jotaiStore.set(selectedCarbonMapperPlumeAtom, null)
           jotaiStore.set(selectedGraphicsAtom, [])
           jotaiStore.set(updateModeAtom, false)
           jotaiStore.set(hasSelectionAtom, false)
