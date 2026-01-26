@@ -88,6 +88,7 @@ export function GraphicsListPanel({ graphics }: { graphics: Array<Graphic> }) {
                 href="https://arcgis-playground-api.onrender.com/docs"
                 target="_blank"
                 rel="noopener noreferrer"
+                style={{ textDecoration: 'underline', cursor: 'pointer' }}
               >
                 Spinning up the API, check it out here.
               </a>
