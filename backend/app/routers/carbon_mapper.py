@@ -23,6 +23,8 @@ async def get_carbon_mapper_plumes(
     plume_id: Optional[str] = None,
     collection_date_start: Optional[str] = None,
     collection_date_end: Optional[str] = None,
+    limit: Optional[int] = 100,
+    offset: Optional[int] = None,
 ) -> CarbonMapperResponse:
     """
     Proxy endpoint to Carbon Mapper API.
@@ -46,6 +48,10 @@ async def get_carbon_mapper_plumes(
         params["collection_date_start"] = collection_date_start
     if collection_date_end:
         params["collection_date_end"] = collection_date_end
+    if limit:
+        params["limit"] = limit
+    if offset:
+        params["offset"] = offset
 
     try:
         async with httpx.AsyncClient() as client:
