@@ -1,16 +1,17 @@
 # app/schemas/geometry.py
+from typing import Optional
 from pydantic import BaseModel
 
 class GeometryBase(BaseModel):
-    label: str | None = None
+    label: Optional[str] = None
     wkt: str
 
 class GeometryCreate(GeometryBase):
     pass
 
 class GeometryUpdate(BaseModel):
-    label: str | None = None
-    wkt: str | None = None 
+    label: Optional[str] = None
+    wkt: Optional[str] = None 
 
 class GeometryRead(GeometryBase):
     id: int

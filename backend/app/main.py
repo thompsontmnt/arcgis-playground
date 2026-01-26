@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers.geometry import router as geometry_router
 from app.routers.census import router as census_router
+from app.routers.carbon_mapper import router as carbon_mapper_router
 
 from app.core.db import Base, engine
 
@@ -25,6 +26,7 @@ def init_db():
 # Register routers AFTER app is created
 app.include_router(census_router, prefix="/api", tags=["census"])
 app.include_router(geometry_router, prefix="/geometry", tags=["geometry"])
+app.include_router(carbon_mapper_router, prefix="/api", tags=["carbon-mapper"])
 
 @app.get("/")
 def root():
