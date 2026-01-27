@@ -1,6 +1,6 @@
 import { Box, Flex } from '@radix-ui/themes'
 import { useQuery } from '@tanstack/react-query'
-import { useAtom, useSetAtom } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useMemo, useState } from 'react'
 
 import { listGeometriesGeometryGetOptions } from '@/api/client/@tanstack/react-query.gen'
@@ -12,7 +12,12 @@ import { useMediaLayer } from '@/hooks/useMediaLayer'
 import {
   carbonMapperLayerAtom,
   carbonMapperMediaLayerAtom,
+  createModeAtom,
+  draftGraphicAtom,
   graphicsLayerAtom,
+  selectedCarbonMapperPlumeAtom,
+  selectedGraphicsAtom,
+  updateModeAtom,
   viewAtom,
   viewModeAtom,
 } from './atoms'
@@ -35,6 +40,19 @@ export default function MapView() {
   const deleteModal = useDeleteSelectedGeometry()
   const { data: geometries } = useQuery(listGeometriesGeometryGetOptions())
   const loadCarbonMapperData = useCarbonMapperData()
+
+  // Atoms to determine which panel to show
+  const isCreating = useAtomValue(createModeAtom)
+  const isUpdating = useAtomValue(updateModeAtom)
+  const draftGraphic = useAtomValue(draftGraphicAtom)
+  const selectedGraphics = useAtomValue(selectedGraphicsAtom)
+  const selectedCarbonMapperPlume = useAtomValue(selectedCarbonMapperPlumeAtom)
+
+  // Show GraphicInfoPanel if there's any graphic interaction, otherwise CarbonMapperInfoPanel
+  const showGraphicInfoPanel =
+    isCreating || isUpdating || draftGraphic || selectedGraphics.length > 0
+  const showCarbonMapperInfoPanel =
+    !showGraphicInfoPanel && selectedCarbonMapperPlume
 
   // Graphics conversion
   const graphics = useMemo(() => {
@@ -114,8 +132,8 @@ export default function MapView() {
         </arcgis-placement>
 
         <arcgis-placement slot="top-right">
-          <GraphicInfoPanel />
-          <CarbonMapperInfoPanel />
+          {showGraphicInfoPanel && <GraphicInfoPanel />}
+          {showCarbonMapperInfoPanel && <CarbonMapperInfoPanel />}
         </arcgis-placement>
 
         <Box
